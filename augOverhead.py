@@ -1,51 +1,71 @@
+import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pandas as pd
-import matplotlib
 
-#matplotlib.rcParams['font.size'] = 14  # Adjust the font size for the axis ticks
+# Load the data
+file_path = '/home/cvpr/Documents/augmentationOverhead.xlsx'
+data = pd.read_excel(file_path)
 
+# Extract unique methods
+unique_methods = data['Methods'].unique()
 
-# Load your data
-data = pd.read_excel('/home/cvpr/Documents/augmentationOverhead.xlsx')  # Replace 'your_file_path.xlsx' with the actual path to your Excel file
-
-# Set the style for the plot
-sns.set(style="whitegrid")
-
-# Creating the scatter plot with labels for each method
-plt.figure(figsize=(7, 5))
-# Define your colors and markers
-colors = ['red', 'green', 'blue', 'purple', 'orange', 'cyan', 'magenta']  # Adjust as needed
-markers = ['o', 's', '^', 'P', '*', 'X', 'D']  # Adjust as needed
-
+# Define colors and markers
+colors = ['red', 'green', 'blue', 'purple', 'orange', 'cyan', 'magenta']
+markers = ['o', 's', '^', 'P', '*', 'X', 'D']
 
 plt.rcParams['axes.edgecolor'] = 'black'
 plt.rcParams['xtick.color'] = 'black'
 plt.rcParams['ytick.color'] = 'black'
 plt.rcParams['axes.labelcolor'] = 'black'
 
-# Iterate through the methods to plot each one with a label
-for i, method in enumerate(data['Methods'].unique()):
-    color = colors[i % len(colors)]  # Cycle through colors
-    marker = markers[i % len(markers)]  # Cycle through markers
+# Extend colors and markers to ensure enough unique ones for each method
+extended_colors = colors * -(-len(unique_methods) // len(colors))  # Ceiling division
+unique_markers = markers * -(-len(unique_methods) // len(markers))  # Ceiling division
+
+# Assign unique markers and colors to specific methods
+# DiffuseMix - Brown, Diamond Marker
+# SaliencyMix - Purple, Plus Marker
+# Guided-R - Pink, Hexagon Marker
+# Mixup - Yellow, Triangle Down Marker
+diffuseMix_index = unique_methods.tolist().index('DiffuseMix')
+saliencyMix_index = unique_methods.tolist().index('SaliencyMix')
+guided_r_index = unique_methods.tolist().index('Guided-R')
+mixup_index = unique_methods.tolist().index('Mixup')
+
+extended_colors[diffuseMix_index] = 'brown'
+unique_markers[diffuseMix_index] = 'd'
+extended_colors[saliencyMix_index] = 'purple'
+extended_colors[guided_r_index] = 'pink'
+unique_markers[guided_r_index] = 'h'
+extended_colors[mixup_index] = 'yellow'
+unique_markers[mixup_index] = 'v'
+
+# Creating the scatter plot
+plt.figure(figsize=(7, 5))
+sns.set(style="whitegrid")
+plt.rcParams['axes.edgecolor'] = 'black'
+plt.rcParams['xtick.color'] = 'black'
+plt.rcParams['ytick.color'] = 'black'
+plt.rcParams['axes.labelcolor'] = 'black'
+
+for i, method in enumerate(unique_methods):
+    color = extended_colors[i]
+    marker = unique_markers[i]
     subset = data[data['Methods'] == method]
     plt.scatter(subset["Augmentation Overhead (+%)"], subset["Accuracy (%)"], s=100, marker=marker, color=color)
     for x, y in zip(subset["Augmentation Overhead (+%)"], subset["Accuracy (%)"]):
-        plt.text(x + 0.2, y+0.3, method, fontsize=11, ha='center', va='bottom')
+        plt.text(x + 0.2, y + 0.3, method, fontsize=11, ha='center', va='bottom')
 
-# Adding titles and labels
-#plt.title('Accuracy vs Augmentation Overhead for Different Methods', fontsize=16)
-plt.ylim(top=80)  # You can also set the bottom limit if needed, e.g., plt.ylim(bottom=60, top=80)
-plt.xlim(right=400)  # You can also set the left limit if needed, e.g., plt.xlim(left=0, right=400)
+# Setting axis limits and labels
+plt.ylim(top=80)
+plt.xlim(right=400)
+plt.xticks(fontsize=15)
+plt.yticks(fontsize=15)
+plt.xlabel('Augmentation Overhead (+%)', fontsize=15)
+plt.ylabel('Accuracy (%)', fontsize=15)
 
-plt.xticks(fontsize=14)  # Adjust font size as needed
-plt.yticks(fontsize=14)  # Adjust font size as needed
-
-plt.xlabel('Augmentation Overhead (+%)', fontsize=14)
-plt.ylabel('Accuracy (%)', fontsize=14)
-
-# Show the plot
+# Show and save the plot
 plt.tight_layout()
-pdf_file_path = 'augOver.pdf'
-plt.savefig(pdf_file_path, format='pdf')
+pdf_file_path_final = 'augOver_final.pdf'
+plt.savefig(pdf_file_path_final, format='pdf')
 plt.show()
