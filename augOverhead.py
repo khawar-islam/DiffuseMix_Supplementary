@@ -43,6 +43,7 @@ unique_markers[mixup_index] = 'v'
 # Creating the scatter plot
 plt.figure(figsize=(7, 5))
 sns.set(style="whitegrid")
+
 plt.rcParams['axes.edgecolor'] = 'black'
 plt.rcParams['xtick.color'] = 'black'
 plt.rcParams['ytick.color'] = 'black'
@@ -65,6 +66,8 @@ plt.xlabel('Augmentation Overhead (+%)', fontsize=15)
 plt.ylabel('Accuracy (%)', fontsize=15)
 
 # Show and save the plot
+
+
 plt.tight_layout()
 pdf_file_path_final = 'augOver_final.pdf'
 plt.savefig(pdf_file_path_final, format='pdf')
