@@ -7,19 +7,27 @@ from matplotlib.legend import Legend
 matplotlib.rcParams['font.size'] = 12  # Adjust the font size for the axis ticks
 
 # Load the CSV file from the provided path
-file_path = '/home/cvpr/Downloads/wandb_export_2023-11-15T17_08_08.317+09_00.csv'
+file_path = '/home/cvpr/Downloads/val_loss.csv'
 data = pd.read_csv(file_path)
 
 # Extracting and restricting the 'Step' column to 100
 data = data[data['Step'] <= 60]
 steps = data['Step']
 
+# # Specifying the column names for 'Top-1 Accuracy' metrics
+# accuracy_columns = [
+#     'Res50 - Valid/Top-5 Accuracy',
+#     'Res50+Gen - Valid/Top-5 Accuracy',
+#     'Res50+Gen+Con - Valid/Top-5 Accuracy',
+#     'Res50+DiffuseMix - Valid/Top-5 Accuracy',
+# ]
+
 # Specifying the column names for 'Top-1 Accuracy' metrics
 accuracy_columns = [
-    'Res50 - Valid/Top-1 Accuracy',
-    'Res50_gen_4pt - Valid/Top-1 Accuracy',
-    'Res50_gen_Con_4pt - Valid/Top-1 Accuracy',
-    'Res50_gen_Con_blen2_4pt - Valid/Top-1 Accuracy',
+    'Res50 - Valid/Loss',
+    'Res50+Gen - Valid/Loss',
+    'Res50+Gen+Con - Valid/Loss',
+    'Res50+DiffuseMix - Valid/Loss',
 ]
 
 # Specifying the legend labels for each model
@@ -43,7 +51,7 @@ for i, col in enumerate(accuracy_columns):
 
 # Increasing the text size of x and y axis labels
 plt.xlabel('Epochs', fontsize=12)
-plt.ylabel('Accuracy (%)', fontsize=12)
+plt.ylabel('Validation Error (%)', fontsize=12)
 
 lines = []  # To store line objects for custom legend
 for i, col in enumerate(accuracy_columns):
@@ -54,12 +62,13 @@ leg = Legend(plt.gca(), [lines[0], lines[1], lines[2], lines[3]], ['Res50', 'Res
              loc='best')
 plt.gca().add_artist(leg)
 
-plt.xticks(fontsize=12)  # Increase font size for x-axis tick labels
-plt.yticks(fontsize=12)  # Increase font size for y-axis tick labels
+plt.xticks(fontsize=15)
+plt.yticks(fontsize=15)
 #plt.legend(title='', loc='best')
 plt.grid(True)
 # Save the plot as a PDF file
-pdf_file_path = 'accuracy_plot.pdf'
+pdf_file_path = 'val_loss.pdf'
+plt.tight_layout()
 plt.savefig(pdf_file_path, format='pdf')
 plt.show()
 plt.close()
